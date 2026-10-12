@@ -1,271 +1,671 @@
+
 # NoX Wiki
 
-A Markdown knowledge base with a public reader and a separate, local-only editing workspace. Both use the same host document directory. The workspace records changes in Git and atomically publishes snapshots; the public reader updates open browsers through server-sent events.
+**Write privately. Publish deliberately. Share knowledge beautifully.**
 
-## Requirements
+NoX Wiki is a self-hosted Markdown knowledge base designed for creating, organizing, connecting, and publishing knowledge.
 
-- Docker Desktop / Docker Engine with Compose, or Node.js 24+ and Git.
-- One workspace process per document/state pair.
-- A local filesystem for the bind mounts. Edit documents through the workspace after the initial import.
+It combines a private writing workspace with a separate public documentation website, giving you control over what you write, what you publish, and when your readers see it.
 
-## Run with Docker
+Whether you're building technical documentation, a personal knowledge base, a fictional universe, or a collection of interconnected notes, NoX Wiki provides a structured home for your content.
 
-From this repository:
+**Self-hosted · Markdown-native · Git versioning · Connected knowledge · Open source**
 
-```sh
+---
+
+## What is NoX Wiki?
+
+Knowledge rarely exists in isolation.
+
+One document leads to another. Concepts reference people, places, projects, or ideas. Over time, those connections become just as valuable as the documents themselves.
+
+NoX Wiki is designed around that principle.
+
+Rather than treating Markdown files as isolated pages, it turns them into a navigable, interconnected knowledge base that readers can explore through links, search, contextual navigation, and visual relationships.
+
+Behind the public website is a dedicated writing workspace where you can create, edit, preview, organize, and publish content without exposing unfinished work.
+
+The two experiences are intentionally separate:
+
+| Public Wiki | Admin Workspace |
+| --- | --- |
+| Read published knowledge | Create and edit Markdown pages |
+| Navigate folders and articles | Organize, rename, and move documents |
+| Explore links and relationships | Preview changes before publishing |
+| Search published content | Search drafts and published content |
+| Browse a read-only website | Review Git history and compare revisions |
+| Receive published updates | Publish individual pages or multiple changes |
+
+**Your writing stays private until you decide to publish it.**
+
+## Features
+
+### A complete Markdown knowledge base
+
+Build your documentation using ordinary Markdown files.
+
+NoX Wiki automatically organizes files into a browsable structure, preserving your folders and document names.
+
+Features include:
+
+- Nested folders and unlimited levels of document organization.
+- Automatic navigation generated from your Markdown directory.
+- Clean, readable page URLs without `.md` extensions.
+- A table of contents generated from article headings.
+- Internal links between notes, sections, and documents.
+- Support for local images and common Markdown formatting.
+- Responsive layouts for desktop, tablet, and mobile.
+
+You don't need to manually configure navigation whenever you create a new page. Documents become part of the knowledge base through their location in the directory.
+
+The root `home.md` document serves as the wiki's home page.
+
+### A dedicated writing workspace
+
+NoX Wiki includes a separate administrative interface for managing your knowledge base.
+
+From the workspace, you can:
+
+- Create new Markdown documents.
+- Edit existing pages.
+- Switch between Markdown source and rendered preview.
+- Save unfinished changes without publishing them.
+- Rename and move documents.
+- Delete pages while retaining their Git history.
+- Review previous revisions.
+- Compare changes between versions.
+
+The editor uses the same Markdown rendering engine as the reader, allowing you to preview how your content will appear before publishing.
+
+Changes are tracked automatically through Git when saved.
+
+You can continue refining a document while visitors see its previously published version.
+
+### Drafts and controlled publishing
+
+NoX Wiki separates **saving** from **publishing**.
+
+Saving a document creates a new working revision. Publishing makes a specific saved revision available to readers.
+
+Pages have three publication states:
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | The page exists in the workspace but has never been published. |
+| **Published** | The currently saved version matches the public version. |
+| **Unpublished changes** | The page has saved changes that have not yet been published. |
+
+This allows you to develop content over time without exposing incomplete notes or experimental changes.
+
+You can publish a single page or use **Server actions → Publish pending pages** to review and publish multiple saved changes together.
+
+Batch publication creates one updated public snapshot. Drafts and unsaved editor changes are never included automatically.
+
+Published pages remain available while you work on new versions.
+
+### Connected notes and Wikilinks
+
+Create connections between concepts using familiar Obsidian-style Wikilinks.
+
+For example:
+
+```markdown
+The city of [[Tidebreak]] was built near the mountains.
+
+Learn more about [[History/The First Age]].
+
+The [[Stoneborn|People of Stone]] were among the first races.
+
+See [[Magic#Origins]] for more details.
+```
+
+NoX Wiki understands these references and resolves them into navigable links.
+
+Supported features include:
+
+- `[[Page]]` links to other documents.
+- `[[Page|Display text]]` for custom link labels.
+- `[[Folder/Page]]` for explicit document paths.
+- `[[Page#Heading]]` for links to specific sections.
+- `[[#Heading]]` for references within the current page.
+
+Renaming or moving a document preserves its identity and previously known addresses, helping existing references remain accessible.
+
+Links to missing, ambiguous, or unpublished destinations are handled without exposing private pages to public readers.
+
+### Interactive knowledge graph
+
+Explore the relationships between your documents visually.
+
+NoX Wiki includes an interactive local knowledge graph in the desktop reader sidebar.
+
+The currently selected document appears at the center, surrounded by directly connected notes.
+
+- See outgoing links and incoming backlinks.
+- Discover which pages reference the current document.
+- Click connected nodes to navigate between articles.
+- Drag nodes to explore their relationships.
+- Pan and zoom around the graph.
+- Use zoom and fit controls to adjust the view.
+- Inspect relationships associated with specific headings.
+
+Node sizes reflect how many distinct notes link to them.
+
+The graph focuses on the selected page and its immediate connections rather than attempting to display the entire knowledge base at once.
+
+For accessibility and precise navigation, the **Links / Backlinks** section also provides a structured list of relationships.
+
+In the Admin workspace, missing or unresolved links can be inspected to identify gaps in the knowledge base.
+
+### Full-text search
+
+Find information across your knowledge base without manually navigating its folders.
+
+NoX Wiki includes built-in full-text search with:
+
+- Case-insensitive and accent-insensitive matching.
+- Multi-word queries.
+- Relevance-ranked results.
+- Matching text highlighted in search results.
+- A quick-search panel displaying the most relevant pages.
+- A dedicated results page for larger searches.
+- Navigation directly to matching passages.
+- Keyboard navigation and browser history support.
+
+Search covers both document content and relevant note identities.
+
+The public search only includes published documents, while the Admin workspace can also search saved drafts.
+
+Search results update when content is saved or published.
+
+No external search service is required.
+
+### Git-powered version history
+
+Every saved change becomes part of your wiki's Git history.
+
+This provides a record of how documents evolve over time.
+
+From the Admin workspace, you can:
+
+- Browse a document's revision history.
+- See when changes were made.
+- View the original Markdown from previous revisions.
+- Read rendered historical versions.
+- Compare any two revisions.
+- Inspect added, removed, and unchanged content.
+- Access historical versions of deleted documents.
+
+Page identity is preserved across moves and renames.
+
+History is available in the private workspace and is not exposed through the public reader.
+
+The current interface supports viewing and comparing historical revisions; restoring a revision directly from the UI is not yet included.
+
+### NoX Sync integration
+
+Bring existing knowledge from your Obsidian vaults into NoX Wiki through **NoX Sync**.
+
+The Admin workspace includes a dedicated import workflow that connects to an existing NoX Sync backend.
+
+From **Server actions → NoX Sync**, you can:
+
+1. Enter your NoX Sync server URL and API key.
+2. Connect to the backend and select a vault.
+3. Browse available notes and folders.
+4. Select individual notes or entire folders.
+5. Review new, changed, unchanged, and conflicting content.
+6. Confirm the import.
+
+Referenced local images are included automatically when supported.
+
+Imported documents preserve their Markdown and vault-relative paths, making it easier to bring existing collections into the wiki.
+
+**Imported content remains private by default.**
+
+Newly imported notes become drafts. Updates to previously published notes also remain unpublished until explicitly approved.
+
+When local and remote versions differ, NoX Wiki lets you compare the content and choose whether to retain the local version or replace the draft.
+
+The integration is read-only toward NoX Sync: it does not modify your original vault, automatically synchronize changes, or delete local pages when source notes disappear.
+
+### Obsidian image support
+
+NoX Wiki understands Obsidian-style image references.
+
+For example:
+
+```markdown
+![[landscape.png]]
+
+![[places/mountain.png]]
+
+![[landscape.png|400]]
+
+![[landscape.png|400x300]]
+```
+
+Images can be resolved from the wiki's `_images` directory.
+
+When an image reference is missing or ambiguous, the Admin workspace provides a warning and supports selecting an existing image to repair the reference.
+
+NoX Sync imports also support associated image assets, with imported image versions kept private until referenced by published content.
+
+This helps maintain the relationship between your notes and their illustrations without requiring you to rewrite every image reference.
+
+Image selection repairs references to files already on the server; it is not a general-purpose image uploader.
+
+### Live publishing
+
+Readers don't need to manually refresh the website whenever you publish new content.
+
+NoX Wiki uses live server events to notify connected browsers about published changes.
+
+When a new public snapshot becomes available, open reader sessions can refresh their content and navigation accordingly.
+
+Only published changes are delivered.
+
+Saved drafts remain invisible to public readers.
+
+### Customizable appearance and branding
+
+Make your knowledge base feel like your own.
+
+NoX Wiki supports configuration for:
+
+- Website name and branding.
+- Custom logo.
+- Interface language.
+- URL prefix.
+- Theme colors.
+- Typography.
+
+The theme system supports configurable colors and font stacks, with changes applied across the wiki, including the reader, Admin workspace, and relationship graph.
+
+Custom light and dark palettes can be configured without modifying the application's components.
+
+Localization is also supported through translation dictionaries, with English as the default fallback.
+
+See the [Theme Configuration Guide](docs/theme-contract.md) for available options.
+
+### Responsive reading experience
+
+NoX Wiki is designed for reading and navigating long-form content across different screen sizes.
+
+The reader provides a structured layout with document navigation, article content, and contextual tools.
+
+On desktop, readers can browse folders, read an article, and explore its relationships or table of contents.
+
+On smaller screens, navigation adapts into collapsible drawers, keeping the article itself as the primary focus.
+
+The Admin workspace also adapts its editing and action panels for mobile and tablet use.
+
+---
+
+## How NoX Wiki works
+
+NoX Wiki uses two separate applications that share the same document collection.
+
+### Public Reader
+
+The public-facing website is a read-only experience.
+
+Visitors can:
+
+- Browse published documents.
+- Search available knowledge.
+- Follow internal links and backlinks.
+- Explore the relationship graph.
+- Navigate article headings.
+- Read updated content as it is published.
+
+The Public Reader has no editing interface and does not expose administrative operations.
+
+### Admin Workspace
+
+The workspace is the private management environment.
+
+It handles editing, Git versioning, publication, document management, and NoX Sync imports.
+
+It can be started only when you need to work on your knowledge base, independently of the public website.
+
+| Capability | Public Reader | Admin Workspace |
+| --- | :---: | :---: |
+| Read published pages | Yes | Yes |
+| Navigate linked documents | Yes | Yes |
+| Search content | Published | Drafts + Published |
+| Explore relationships | Yes | Yes |
+| Create and edit pages | — | Yes |
+| Preview unpublished changes | — | Yes |
+| Publish content | — | Yes |
+| View Git history | — | Yes |
+| Import from NoX Sync | — | Yes |
+
+Both applications use the same Markdown collection, but the public service receives only a published snapshot.
+
+This separation allows you to keep the public website running without keeping the editing workspace permanently active.
+
+## Getting started
+
+### Requirements
+
+NoX Wiki supports self-hosted deployment using:
+
+- Docker Engine or Docker Desktop
+- Docker Compose
+- A local filesystem for documents and application state
+
+Alternatively, it can run directly using Node.js 24+ and Git.
+
+### Installation with Docker
+
+Clone the repository:
+
+```bash
+git clone https://github.com/mapherez/nox-wiki-codex.git
+```
+
+This downloads the project source without changing any running services.
+
+Enter the repository directory:
+
+```bash
+cd nox-wiki-codex
+```
+
+Create the state directory:
+
+```bash
 mkdir -p state
+```
+
+This directory stores private workspace state, Git history, and publication metadata. Existing contents are preserved.
+
+Start the Admin workspace:
+
+```bash
 docker compose -f compose-admin.yml up -d --build
+```
+
+This builds and starts the local Admin service using the repository's Compose configuration.
+
+Then start the Public Reader:
+
+```bash
 docker compose -f compose.yml up -d --build
 ```
 
-The first workspace startup imports the existing Markdown as drafts and creates the initial Git version. Publish pages individually from the workspace, including `home.md` to make the public home page available. Existing installations retain their current public pages during migration. Open:
+This builds and starts the separate read-only public service. It does not replace your document collection.
 
-- Reader: `http://localhost:3000`
-- Workspace: `http://localhost:3001`
+Open the applications:
 
-Both ports are bound to host loopback. The workspace has its own isolated Docker network and does not restart automatically. It has no login: access is restricted by the host port mapping, allowed Host/Origin checks and a per-process CSRF token.
+| Application | Default address |
+| --- | --- |
+| **Public Reader** | <http://localhost:3000> |
+| **Admin Workspace** | <http://localhost:3001> |
 
-Stop editing without stopping the reader:
+Both services bind to the host's loopback interface by default.
 
-```sh
-docker compose -f compose-admin.yml stop
-```
+### Publish your first page
 
-Start it again with `docker compose -f compose-admin.yml start`. `pause` / `unpause` also work, but complete pending saves first. Stopping the workspace controls writes through this application; it does not prevent processes or users with host filesystem access from changing files.
+On initial startup, the Admin workspace imports existing Markdown files as drafts and creates their initial Git history.
 
-On Linux, the workspace runs as UID/GID 1000. Ensure `dist/` and `state/` are writable by that account, or set a matching `user` in a local Compose override. Docker Desktop normally handles bind-mount permissions automatically.
+To make the wiki available to readers:
 
-## CI and manual image publication
+1. Open the Admin workspace.
+2. Select `home.md` from the navigation.
+3. Review or edit its content.
+4. Save any changes.
+5. Select **Publish** from the page actions.
 
-**CI** runs on pushes and pull requests targeting `master`. It uses Node.js 24 with npm caching and runs `npm ci`, `npm run check`, `npm test` and `npm run build`. Superseded runs are cancelled. CI does not build or publish Docker images.
+Your home page is now available through the Public Reader.
 
-To publish images, open **GitHub → Actions → Publish Images → Run workflow**, select **master**, and enter a **tag** (`latest` by default, or a version such as `1.2.0`). This workflow runs only when started manually. It repeats all four validation commands before building either Docker target; failed validation prevents both publications.
+Continue by creating new pages or publishing the other documents in your collection.
 
-The workflow publishes these images for **linux/amd64** and **linux/arm64**, using only the built-in `GITHUB_TOKEN`:
+Alternatively, use **Publish pending pages** to publish multiple saved drafts in one reviewed operation.
 
-- `ghcr.io/mapherez/nox-wiki-public`
-- `ghcr.io/mapherez/nox-wiki-admin`
+### Example document organization
 
-Both receive the chosen tag and `sha-<full commit SHA>`. The `sha-` prefix is reserved for commit tags. Publishing `1.2.0` does not also update `latest`; choose `latest` explicitly to update it. Nothing deploys automatically.
-
-## Deploy from GHCR
-
-Keep `compose.yml` and `compose-admin.yml` for local builds. Use `compose.deploy.yml` and `compose-admin.deploy.yml` to pull images from GHCR. The deployment files retain the same project names, services, bind mounts, loopback ports, separate networks, restart policies and hardening.
-
-After the first publication, set both GHCR packages' visibility to **Public** if the host should pull without registry credentials. GitHub creates new packages as private by default; see [container registry access](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
-
-Prepare the host directories and configuration as described below, then set the same image tag for both services in `.env`:
-
-```dotenv
-NOX_WIKI_TAG=1.2.0
-```
-
-Omit that variable or use `latest` to follow the manually published latest image. Start or update Public with:
-
-```sh
-docker compose -f compose.deploy.yml pull
-docker compose -f compose.deploy.yml up -d
-```
-
-Start or update Admin only when you need the workspace:
-
-```sh
-docker compose -f compose-admin.deploy.yml pull
-docker compose -f compose-admin.deploy.yml up -d
-```
-
-Stop Admin with `docker compose -f compose-admin.deploy.yml stop`. Its restart policy remains `"no"`.
-
-To pin a version or roll back, change `NOX_WIKI_TAG` to an existing version tag or `sha-<full commit SHA>`, then repeat the corresponding `pull` and `up -d` commands. These commands replace the containers; they retain the host documents, state and configuration.
-
-## Host directories and configuration
-
-Copy `.env.example` to `.env` to change ports or bind-mount locations. They can be absolute paths:
-
-```dotenv
-CONTENT_DIR=/home/MY_USER/.docker/codex/dist
-STATE_DIR=/home/MY_USER/.docker/codex/state
-SITE_CONFIG_FILE=/home/MY_USER/.docker/codex/site.json
-PUBLIC_PORT=3000
-ADMIN_PORT=3001
-```
-
-Create those directories and copy `config/site.json` to the configured site file before starting. The local Compose files build from this source repository; the deployment Compose files pull the published GHCR images.
-
-The public service mounts only documents and configuration, read-only. Git and transaction journals live in `state/` and are mounted only by the workspace. Updating an image does not replace these files.
-
-`config/site.json` controls the brand name/logo, locale, URL prefix, Git author, page size limit and publication polling interval. Both services must use the same site configuration. For a prefix such as `/codex`, set `basePath` to `/codex` and access `/codex/`; there is no trailing slash in configuration. The logo can use a local `/media/...` image URL or an HTTPS URL.
-
-All application copy is in `packages/i18n/en.json`. UI components use typed translation keys; API errors contain codes and parameters instead of embedded display text. Brand and Git identity come from site configuration. To override or add a language at runtime, mount a JSON dictionary and set `LOCALE_FILE` to its container path on both services, then set `locale` in site configuration. Missing keys fall back to English. Sample Markdown is editable content, separate from interface localization.
-
-## Theme
-
-An optional `theme` in `config/site.json` configures five colors and three font stacks for the whole application, including Admin and the graph. Partial overrides inherit defaults; embedded readers can override the theme per instance. See the [theme contract](docs/theme-contract.md) for defaults, light/dark examples, validation and the TypeScript API. No publication or state reset is needed.
-
-## Cloudflare
-
-Route only the public service. If `cloudflared` runs on the host, use `http://localhost:3000` as its origin. If it runs in Docker, connect it to the public Compose network and use `http://wiki-public:3000`:
-
-```sh
-docker network connect codex-public_public YOUR_CLOUDFLARED_CONTAINER
-```
-
-Do not connect the tunnel to the admin network. If you use a URL prefix, preserve it in forwarding. Do not cache the API, HTML or `/api/events` path, and do not buffer SSE responses. Fingerprinted assets can be cached. Configure TLS/HTTP2 on the public edge. The application does not create or change a Cloudflare tunnel.
-
-## Documents and navigation
+NoX Wiki uses an ordinary Markdown directory:
 
 ```text
 dist/
 ├── home.md
 ├── introduction.md
-├── any-folder/
-│   └── a-page.md
-└── another-folder/
-    └── nested/
-        └── another-page.md
+├── guides/
+│   ├── getting-started.md
+│   └── configuration.md
+├── concepts/
+│   ├── overview.md
+│   └── architecture.md
+└── assets/
+    └── references.md
 ```
 
-Only root `home.md` is hidden from navigation. Every other `.md` file participates, including root-level documents and nested `home.md` files. Folder names are unrestricted except filesystem-reserved names; `documentation` has no special meaning. Labels use filenames without extensions, with folders before pages and locale-aware alphabetical/numeric ordering. Empty folders are omitted.
+Folders become navigation groups, while Markdown files become pages.
 
-The right-hand index is generated from H2–H6 headings with unique anchors. Links between Markdown files, references, relative image paths and heading anchors are supported. Raw HTML is escaped. Local images must be PNG, JPEG, GIF, WebP, AVIF or SVG, and are served with restrictive content headers. Uploading images through the workspace is not included.
+For example:
 
-Save commits a working version to Git and shows it rendered in the admin. Publish releases that saved version of the current page and updates public browsers. The page status is Draft, Published or Unpublished changes. Unsaved editor text cannot be published. Publishing checks the revision you reviewed and rejects a stale request if another window has saved changes.
+`dist/guides/getting-started.md`
 
-Admin navigation includes all active notes; public navigation and link resolution include only published versions. Publishing one page never publishes pending edits in another. Links to unpublished notes remain text in the public reader. Existing public pages keep their last published content until Publish is clicked again. Publish can also refresh resolved images without changing the Markdown; repeating an identical publication is a no-op.
+becomes a readable URL resembling:
 
-For multiple pages, open **Server actions → Publish pending pages** in the Admin drawer. Review the list of new drafts and saved changes, then confirm the batch. Unchanged published pages are excluded, and unsaved editor text is never included. The server checks every reviewed revision before updating one public snapshot, rendering once for the batch rather than once per page. A changed or deleted reviewed draft requires refreshing the list. Drafts created after review remain private. The navigation expand/collapse icon affects all folders; NoX Sync connection settings return to the step from which they were opened.
+`/wiki/guides/getting-started`
 
-Renaming/moving preserves page identity and old-address aliases, but the public path changes only on Publish. A current page path takes precedence over an alias. Moving rewrites relative link destinations in that document using a Markdown parser; this may normalize its Markdown formatting. Delete page is an explicit removal: after confirmation, it removes the working and published page while preserving history. Historical links refer to the current admin workspace, not a complete historical site snapshot.
+You can keep your existing folder structure or organize documents directly from the Admin workspace.
 
-History is available only in the local workspace, including for deleted pages. View original Markdown or rendered versions and compare any two revisions. Restoring from the UI is not included.
+## Managing your wiki
 
-The admin header opens a right-hand drawer with page and workspace actions. Save and Cancel appear there while editing. On desktop this drawer has no overlay. On mobile, the header centers the configured brand and omits the subtitle; a left hamburger opens navigation and the right chevron opens admin actions. Each mobile drawer occupies 92% of the screen, dims the page and closes by tapping outside, swiping toward its edge, using Close or pressing Escape. The public header has no admin controls or mode label.
+### Creating and editing pages
 
-On desktop (above 1024 px), entering Edit or New page keeps the actions drawer open and reserves space beside the content. On smaller screens, those actions close the drawer before opening the editor. The editor's **Markdown** and **Rendered** controls switch between the source and an unsaved preview using the same Markdown engine as the wiki, including note links and imported image bindings. Preview never saves, commits or publishes. UI icons use Phosphor.
+Open the Admin workspace and use **Server actions → New page** to create a document.
 
-### Obsidian images
+Specify its Markdown path, write your content, and save it.
 
-Place image assets in `dist/_images/` or its subfolders. `![[photo.png]]` searches that entire tree by filename; exactly one match renders automatically. A reference with a path, such as `![[places/photo.png]]`, is relative to `_images` and resolves only that exact file. Use `![[./photo.png]]` to explicitly select a root-level image when another subfolder contains the same name. Matching is case-sensitive. Optional dimensions such as `![[photo.png|400]]` and `![[photo.png|400x300]]` are supported. Examples inside code blocks, inline code and escaped embeds remain literal. Note embeds are not included.
+For an existing document, open its page actions and select **Edit**.
 
-Missing or ambiguous images show a small warning icon. In the admin, click it to choose the correct existing image with the system file picker. In browsers supporting directory selection, the first click asks you to select the host `_images` folder; click the icon again to choose an image. That folder is remembered for the current app session. The selected relative path and file contents are validated against the server's `_images` folder. Selecting another directory or a file outside it cannot publish a reference.
+The editor offers two views:
 
-Other browsers use the standard native file picker and match the chosen file by name and SHA-256. If identical files exist at multiple paths, that fallback cannot determine the selected path: use a browser with directory selection support or edit the explicit Markdown path. No file is uploaded. Canceling a picker leaves the note unchanged.
+- **Markdown** — Edit the original source.
+- **Rendered** — Preview the result without saving or publishing.
 
-Choosing a valid image updates only the clicked embed, retains its dimensions and commits the correction as a working version. Publish the page to release the correction. Concurrent note changes are rejected rather than overwritten. Public readers and historical versions have no repair controls. The image index is rebuilt for admin previews and explicit publications; restarting the admin updates its preview but preserves the public snapshot. This does not change the restrictions on external Markdown edits. Manually managed image files remain shared host assets: Publish versions their Markdown references, not their bytes. NoX Sync imports use the separate private-until-published asset policy described below.
+When finished, save the document to create a Git revision.
 
-### NoX Sync imports
+Select **Publish** when you're ready for the public website to reflect that version.
 
-Open the right Admin drawer, then **Server actions → NoX Sync**. Connection settings, vault selection, the recursive note/folder selection, review, conflicts and results all stay in that drawer. The drawer title stays **NoX Sync** and its header Back always returns to Actions. The chevron beside the current step goes back within the import flow and is disabled at the first step. Closing the drawer keeps the current operation in memory. History, deleted pages and move/delete controls also use the same drawer. The Markdown editor stays in the main content area.
+### Organizing documents
 
-Enter the NoX Sync backend's base **Server URL** (without `/v1`) and your existing **API key**, then choose a vault. Select notes or whole folders and review the import before applying it. Referenced local images are included automatically; linked notes are not imported unless selected. Notes retain their paths from the vault root and their original Markdown. Imported notes are drafts: neither new notes nor changes to previously published notes become public until you Publish each page.
+The Admin workspace provides actions to rename, move, and delete documents.
 
-Once connected, opening NoX Sync goes straight to the vault selector; use **Connection settings** to change the connection. A saved key is shown with a masked placeholder; its value is never sent to the browser. **Save and connect** is disabled until the URL or key changes. Click the available steps to navigate directly, or the drawer header Back to return to page and server actions from any step. Note selection shows a yellow dot for unchanged notes and a red dot for conflicts or blocked imports, with accessible status text; new or updated drafts have no dot. The folder control expands or collapses the whole tree, including subfolders. These statuses use the current file manifest; review still validates the selected downloads before import.
+Moving a page preserves its underlying identity and Git history.
 
-The connection is made by the Admin server, not the browser. The key is stored in ignored private `state/nox-sync.json`, outside the document mount and Git history, and is never returned to the browser. Leaving the key field empty retains the saved key for the same URL. Disconnect removes the credential but preserves imported notes, source identities and history. Reconnecting to the same URL recognizes earlier imports. Treat the state directory and its backups as private, including its credential file. When Admin runs in Docker and NoX runs on the host, use `host.docker.internal` instead of `localhost` in the Server URL.
+Its published address only changes when the updated page is published.
 
-This requires the NoX Sync read API: authenticated `GET /v1/auth/check`, `/v1/vaults`, `/v1/files?vaultId=…` and conditional `/v1/files/download` with **both** `expectedHash` and `expectedRevision`. Every download is checked against the selected SHA-256 and byte size. The integration never writes to NoX Sync, starts sync sessions or imports automatically. A changed/deleted selected file, incompatible response, bad hash or cancelled preparation aborts the preparation without changing notes. Refresh the file list before retrying a changed selection.
+Deleting a page requires confirmation and removes the active working and published page while retaining its historical revisions.
 
-Reimport updates the existing draft only when there are no local edits. When both versions differ, review their Markdown and choose **Keep local** (the default) or **Replace draft**, with an inline confirmation. A note already at the exact source path but not linked to that source is also a conflict: confirming **Replace draft** links the existing page to the source for future updates. Replacements retain page identity, Git history and the previous public version. Unchanged imports make no commit. Reviewed local revisions are checked again when applying; concurrent edits require a new review. Other path collisions, invalid paths, `home.md`, the reserved `_images` directory and locally deleted source notes are blocked. Local moves retain page identity and their current destination. Remote renames appear as new source paths; remote removals never delete Codex pages.
+The root `home.md` is protected from ordinary move and delete actions.
 
-Imported images live under the reserved `dist/_images/nox-sync/` namespace, separated by connection, vault and SHA-256 version. Per-page bindings in private Git metadata map source references to these immutable paths without rewriting Markdown. Obsidian basename images resolve only within the selected source vault; explicit vault paths and normal relative Markdown images are supported. Missing or ambiguous references are shown during review. Ambiguous candidates are downloaded privately so the existing native image picker can resolve a specific Obsidian embed afterwards. HTTP/HTTPS image URLs remain external. Imported image files have a 100 MiB per-file limit; Markdown uses the site's `maxPageBytes` limit.
+### Publishing multiple changes
 
-The public server denies all imported image URLs unless referenced by the current published snapshot, including requests that already know a draft URL. Publishing a saved page authorizes only the image versions referenced by that page. Reimporting an image keeps the old public bytes available until Publish; an old asset remains public while another published page still references it. Legacy/manual images keep their existing behavior. Keep this namespace unchanged on the host; modifying its versioned bytes manually defeats version preservation.
+For larger documentation updates, open **Server actions → Publish pending pages**.
 
-Preparations download into private `state/nox-imports/` with bounded concurrency and progress/cancellation. They expire after 24 hours and are discarded on Admin restart; refresh the selection and prepare again. Applying a batch uses one Git commit and the existing journal/recovery flow, and refreshes Admin browsers without publishing. Cancelling applies only to preparation; closing the drawer does not cancel it. Keep `dist/` and `state/` together in backups, including versioned images and publication state. Manual external Markdown edits after initialization remain unsupported; this importer uses the workspace's transactional write service instead.
+The workspace displays eligible new drafts and saved changes that have not yet been published.
 
-### Obsidian note links and page URLs
+Review the selection and confirm to update the public snapshot.
 
-Use `[[Humans]]` to find `Humans.md` anywhere in the collection, or `[[Humans|Humanity]]` to change the displayed text. Paths such as `[[races/Humans]]` are relative to the document root and distinguish duplicate filenames. `[[./Humans]]` selects a root-level note. The `.md` extension is optional in wikilinks; filenames are matched case-sensitively. Existing page aliases continue resolving after a rename.
+This makes it possible to prepare several related articles privately before publishing them together.
 
-`[[Humans#Culture]]`, `[[Humans#Culture|Human culture]]` and `[[#Culture]]` link to headings in another note or the current note. Heading text maps to the actual generated anchor, including accents and punctuation. Repeated heading names select the first occurrence; an exact anchor such as `#culture-1` can select a later occurrence. Code examples and escaped links remain literal. Plugins, note embeds and block references are not supported.
+## Configuration and deployment
 
-Missing or ambiguous destinations, including missing headings, remain plain text. Admin mode adds a small warning icon with a localized explanation; public mode hides that warning. The index is rebuilt for every publication, so creating or changing the target through the admin resolves existing references automatically without editing the referring note.
+### Site settings
 
-Browser URLs omit `.md`: `races/Humans.md` is served at `/wiki/races/Humans`, while `home.md` remains `/`. Normal Markdown links such as `[Humanity](races/Humans.md)` also generate these URLs. Direct navigation and refresh work; legacy URLs with `.md` and moved-page aliases redirect to the current clean URL. Configured URL prefixes are preserved. Internal file paths and API paths still include `.md`.
+NoX Wiki uses `config/site.json` for website configuration.
 
-## Relationships
+A basic configuration looks like:
 
-The desktop right sidebar shows a local graph above **On this page**, including notes without headings. The current note stays at the center; arrows show outgoing links and backlinks. Hover to identify a note, click it to open it, or drag a point to move it while its connections react. The simulation settles after release; the central note gently returns to the center. Drag empty space to pan, and use wheel/gesture zoom or the zoom and fit controls. Node sizes reflect the number of distinct notes linking to them. All direct neighbours are included; second-level relationships are not drawn.
-
-Open **Links / Backlinks** for keyboard-accessible links grouped by note and heading. Admin also shows missing or ambiguous references and invalid headings, with dashed graph connections. Code examples, images, external links and references within the same note do not create relationships. Reduced-motion preferences show the final layout without animation. The graph and list are suspended when the right sidebar is hidden, including mobile and the desktop actions drawer.
-
-`GET /api/relationships?path=home.md` (under the configured URL prefix) returns the visible snapshot revision, central stable note ID, local nodes, directed edges and their heading destinations. Admin includes unresolved references; Public uses only published notes and omits unresolved references. The reusable in-memory index keeps all notes, including isolated notes, and reuses extraction when their rendered HTML is unchanged. Live updates preserve existing positions and the camera where possible. No extra database, stored layout, state reset or collection republication is required. A full-collection graph page is reserved for a later update.
-
-## Search
-
-The header search finds text throughout notes, ignoring case and accents (for example, `gut` matches `güt`). All words must occur in a note; complete phrases rank first. Both visible aliases and Obsidian link targets are searchable. Image references and filenames are excluded unless a note link explicitly refers to that name.
-
-The floating panel shows the ten most relevant notes, with matching text in bold. **Show all** opens a dedicated results page with additional results loaded in batches. Selecting a result opens the note at the matching passage. Search URLs support direct access and browser Back. Use the arrow keys to navigate quick results and Escape to close the search.
-
-Public search uses only published versions; Admin search includes saved drafts. Saving and publishing refresh open search results through the existing live connection. No external search service or separate persistent index is required.
-
-## Development and checks
-
-The npm server scripts load the repository-root `.env` automatically when it exists. Set `PUBLIC_PORT` and `ADMIN_PORT` there to choose the local ports, and `SITE_CONFIG_FILE` to choose the site JSON. Existing shell variables override the same variables in `.env`. `PORT`, when explicitly set, overrides the selected app port (Docker uses it for its internal port); leave it unset when using separate public/admin ports. `SITE_CONFIG` remains a legacy fallback for `SITE_CONFIG_FILE`.
-
-Stop the Docker services before switching to npm against the same documents and state, especially the admin: only one writer can own that state directory.
-
-```sh
-docker compose -f compose-admin.yml stop
-docker compose -f compose.yml stop
+```json
+{
+  "locale": "en",
+  "brand": {
+    "name": "NoX Wiki",
+    "logoUrl": null
+  },
+  "basePath": "",
+  "gitAuthor": {
+    "name": "NoX",
+    "email": "wiki@localhost"
+  },
+  "maxPageBytes": 1048576,
+  "publicationPollMs": 500
+}
 ```
 
-```sh
-npm ci
-npm run check
-npm run build
-npm test
-npm run admin
-# In another terminal:
-npm start
-```
+You can customize the brand name, logo, language, path prefix, and other supported settings.
 
-The public and admin builds have separate entrypoints. The public build does not include the editor or history components. The backend never registers admin API routes in public mode. `build/` contains application assets; `dist/` is reserved for your Markdown.
+Theme overrides can be added to the same configuration.
 
-For UI development, run `npm run dev:admin` and `npm run dev:ui` in separate terminals. Vite runs on port 5173 and proxies to the configured `ADMIN_PORT` (or explicit `PORT`). Add `http://localhost:5173` and `http://127.0.0.1:5173` to `ADMIN_ORIGINS` in `.env`, alongside the admin backend origins, then restart the backend. An example is included in `.env.example`. The `dev:public` and `dev:admin` scripts run server source directly; build once first to provide the browser assets when visiting the backend port. Production never uses Vite's development server. With NVM on Windows, run `nvm use 24` in your own shell before using npm.
+### Environment variables
 
-## Embedding the reader
+The included [.env.example](.env.example) documents the available deployment settings.
 
-The reusable entrypoint is `apps/web/src/lib/reader/index.ts`. `CodexReader` accepts `apiBase`, `basePath`, the current document `path` and `hash`, a translator, and an `onNavigate(path, hash, replace)` callback. The parent controls routing and transitions. Optional snippets supply a toolbar or replace the content area for the local workspace.
+| Variable | Default | Description |
+| --- | --- | --- |
+| `PUBLIC_PORT` | `3000` | Public Reader host port. |
+| `ADMIN_PORT` | `3001` | Admin Workspace host port. |
+| `CONTENT_DIR` | `./dist` | Markdown document directory. |
+| `STATE_DIR` | `./state` | Private Git and workspace state. |
+| `SITE_CONFIG_FILE` | `./config/site.json` | Website configuration file. |
+| `NOX_WIKI_TAG` | `latest` | Image tag used by GHCR deployment Compose files. |
 
-The reader does not manipulate browser history or the document title. The standalone app owns those responsibilities. Reader styles are scoped beneath `.codex`, with CSS custom properties for theme and header offset. SSE and pending requests are cleaned up when the reader is destroyed. For a separate API origin, configure an explicit same-origin proxy in the host application; broad CORS is intentionally not enabled.
+Both applications must use the same content directory and site configuration.
 
-The host supplies the mobile navigation trigger. Bind `navigationOpen` and pass a matching `navigationId` to connect that trigger to the reader's drawer. Set `--codex-top` to the host header's height.
+### Published Docker images
 
-Example within another Svelte application:
+NoX Wiki has separate container images for its two applications:
 
-```svelte
-<script lang="ts">
-  let navigationOpen = $state(false);
-  const uid = $props.id();
-  const navigationId = uid + '-navigation';
-</script>
+| Service | Image |
+| --- | --- |
+| Public Reader | `ghcr.io/mapherez/nox-wiki-public` |
+| Admin Workspace | `ghcr.io/mapherez/nox-wiki-admin` |
 
-<button
-  aria-label={translate(navigationOpen ? 'nav.close' : 'nav.open')}
-  aria-expanded={navigationOpen}
-  aria-controls={navigationId}
-  onclick={() => navigationOpen = !navigationOpen}
->{translate(navigationOpen ? 'nav.close' : 'nav.open')}</button>
-<CodexReader
-  apiBase={settings.apiBase}
-  basePath={settings.basePath}
-  path={selectedDocument}
-  t={translate}
-  onNavigate={navigateToDocument}
-  {navigationId}
-  bind:navigationOpen
-/>
-```
+Prebuilt-image deployments use:
 
-A packaged Web Component adapter is a possible follow-up; this version exposes the Svelte component directly.
+- [`compose.deploy.yml`](compose.deploy.yml)
+- [`compose-admin.deploy.yml`](compose-admin.deploy.yml)
 
-## Recovery and backups
+The standard Compose files build directly from the repository source.
 
-Back up `dist/`, `state/` and site/locale configuration together while the workspace is stopped. Git lives in `state/repository`: each page has a stable UUID Markdown file and a metadata file recording its current path, aliases and deletion state. This keeps history exact across moves without guessing renames. The editable directory remains in the familiar folder layout.
+Image publication is controlled through the project's GitHub Actions workflow. Deployment and updates are not automatic.
 
-Writes are serialized and protected by a process lock. A transaction journal enables rollback before a commit or completion after a commit. `state/published.json` records the Git commit and page revision selected for each public page, together with the exact snapshot to deliver. It does not require branches, merges or Markdown frontmatter. The admin reads its separate preview at `state/.wiki/publication.json`; the public service reads only the atomically replaced `dist/.wiki/publication.json`.
+### Reverse proxy and public access
 
-On upgrade, the admin derives publication references from the existing public snapshot and Git history, preserving the exact visible snapshot. On subsequent restarts it restores that recorded snapshot, never the latest drafts. If Publish is interrupted after recording its intent, retrying or restarting completes delivery of that exact version. A missing public snapshot can be rebuilt from the private publication state. Keep `state/published.json` with the rest of your backups. After an unclean shutdown, the lock may take around ten seconds to expire before startup can recover.
+NoX Wiki can be exposed through an existing reverse proxy or Cloudflare Tunnel.
 
-External document edits are deliberately not imported after initialization. The workspace detects differences before writing and at startup, preserves the files and refuses to overwrite them. Restore a consistent backup to resume. To start a new collection from externally edited files, use a new empty state directory and keep the previous state as a backup; that creates a new history.
+The intended configuration exposes only the **Public Reader**.
+
+Keep the Admin workspace local and accessible only from a trusted environment.
+
+When using Cloudflare Tunnel, route traffic to the public service and preserve any configured URL prefix.
+
+Avoid caching dynamic HTML or API responses, and ensure that live update connections are not buffered.
+
+NoX Wiki does not create or configure the tunnel automatically.
+
+## Security and privacy
+
+NoX Wiki separates public reading from private editing at the application and deployment levels.
+
+**Public Reader**
+
+- Read-only access to published content.
+- No administrative editing routes.
+- No access to private Git history or workspace state.
+- Unpublished notes and imported private images remain inaccessible through the public publication interface.
+
+**Admin Workspace**
+
+- Access to source documents, Git history, and publication controls.
+- Local-only network binding by default.
+- Separate container network from the public service.
+- Request origin validation and CSRF protection.
+- Private storage for NoX Sync credentials.
+
+**Important:** The Admin workspace currently does not provide user login or account-based authentication. Its security model depends on keeping it accessible only through trusted local access.
+
+Do not expose the Admin port publicly without an appropriate independent authentication and access-control layer.
+
+### Backups
+
+Back up the following together:
+
+- `dist/` — Markdown documents and associated content.
+- `state/` — Git history, publication state, and private import metadata.
+- Site configuration and any custom localization files.
+
+Stop the Admin workspace before taking a consistent backup.
+
+Preserving only the Markdown documents does not preserve the complete editing history or publication state.
+
+## For developers
+
+NoX Wiki is built with TypeScript, Svelte 5, Node.js, and Git.
+
+Its architecture separates the Public Reader, Admin Workspace, document processing, and shared components.
+
+| Component | Technology |
+| --- | --- |
+| Frontend | Svelte 5, TypeScript |
+| Backend | Node.js, Express |
+| Markdown rendering | markdown-it |
+| Version history | Git |
+| Knowledge graph | D3 |
+| Search | Built-in in-memory indexing |
+| Localization | i18next |
+| Deployment | Docker Compose |
+| Container architectures | Linux AMD64 and ARM64 |
+
+### Embeddable reader
+
+The Markdown reader is also available as a reusable Svelte component.
+
+Applications using Svelte can integrate `CodexReader` with their own routing and navigation behavior.
+
+This makes it possible to reuse NoX Wiki's reading experience in another compatible application rather than maintaining a separate Markdown renderer.
+
+The reusable entrypoint is:
+
+`apps/web/src/lib/reader/index.ts`
+
+The integration currently exposes a Svelte component rather than a packaged framework-independent Web Component.
+
+### Development
+
+Install dependencies with `npm ci`, then use the repository's scripts for checking, testing, building, and starting the applications.
+
+| Script | Purpose |
+| --- | --- |
+| `npm run check` | TypeScript and Svelte validation. |
+| `npm test` | Automated tests. |
+| `npm run build` | Build server, Public Reader, and Admin Workspace. |
+| `npm start` | Start the public service. |
+| `npm run admin` | Start the Admin workspace. |
+| `npm run dev:ui` | Start the development UI server. |
+
+Only one Admin process should manage a particular document and state directory at a time.
+
+## Project scope
+
+NoX Wiki focuses on personal and self-hosted knowledge publishing.
+
+It is designed for individuals and projects that want direct ownership of their Markdown files, version history, and publishing infrastructure.
+
+Some capabilities are intentionally outside its current scope, including:
+
+- Multi-user accounts and role-based editorial permissions.
+- Automatic bidirectional synchronization with NoX Sync.
+- A complete global knowledge graph spanning every document simultaneously.
+- One-click restoration of historical revisions from the Admin interface.
+- General-purpose media uploads through the editor.
+- Collaborative real-time editing between multiple authors.
+
+The current experience emphasizes Markdown ownership, deliberate publishing, and structured exploration of interconnected knowledge.
