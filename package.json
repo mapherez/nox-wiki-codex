@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=26.13.1 <27"
+  },
   "scripts": {
     "dev:public": "node --env-file-if-exists=.env --import tsx apps/server/src/main.ts public",
     "dev:admin": "node --env-file-if-exists=.env --import tsx apps/server/src/main.ts admin",
