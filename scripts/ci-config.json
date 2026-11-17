@@ -1,0 +1,15 @@
+{
+  "workflow": "ci.yml",
+  "marker": "nox-wiki-codex-Release:",
+  "branch": "master",
+  "files": [
+    {
+      "path": "package.json",
+      "fields": [["version"]]
+    },
+    {
+      "path": "package-lock.json",
+      "fields": [["version"], ["packages", "", "version"]]
+    }
+  ]
+}

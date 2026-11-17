@@ -1,67 +1,123 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { EventEmitter } from 'node:events';
-import { createHash } from 'node:crypto';
-import type { PageRecord, Publication, PublicationStatus } from '../../../../packages/contracts';
-import type { Translator } from '../../../../packages/i18n';
-import { DomainError, isErrno } from '../domain/errors';
-import { buildNavigation } from '../domain/navigation';
-import { MarkdownRenderer } from '../domain/markdown';
-import { atomicWrite, readJson, serialize } from '../infrastructure/filesystem';
-import { ImageFiles } from '../infrastructure/image-files';
-import { isImportedImage } from '../domain/imported-images';
+import fs from "node:fs/promises";
+import path from "node:path";
+import { EventEmitter } from "node:events";
+import { createHash } from "node:crypto";
+import type { PageRecord, Publication, PublicationStatus } from "../../../../packages/contracts";
+import type { Translator } from "../../../../packages/i18n";
+import { DomainError, isErrno } from "../domain/errors";
+import { buildNavigation } from "../domain/navigation";
+import { MarkdownRenderer } from "../domain/markdown";
+import { atomicWrite, readJson, serialize } from "../infrastructure/filesystem";
+import { ImageFiles } from "../infrastructure/image-files";
+import { isImportedImage } from "../domain/imported-images";
 
-export const publicationPath = (root: string): string => path.join(root, '.wiki', 'publication.json');
+export const publicationPath = (root: string): string =>
+  path.join(root, ".wiki", "publication.json");
 
 export class Publisher {
-  constructor(private readonly root: string, private readonly renderer: MarkdownRenderer, private readonly locale: string, private readonly outputRoot = root) {}
-  async render(pages: PageRecord[], revision: string, status?: (page: PageRecord) => PublicationStatus): Promise<Publication> {
-    const paths = pages.filter(page => !page.deleted).map(page => page.path);
+  constructor(
+    private readonly root: string,
+    private readonly renderer: MarkdownRenderer,
+    private readonly locale: string,
+    private readonly outputRoot = root,
+  ) {}
+  async render(
+    pages: PageRecord[],
+    revision: string,
+    status?: (page: PageRecord) => PublicationStatus,
+  ): Promise<Publication> {
+    const paths = pages.filter((page) => !page.deleted).map((page) => page.path);
     const images = await new ImageFiles(this.root).index();
     const notes = this.renderer.noteIndex(pages);
     const snapshot: Publication = {
-      schema: 1, revision, publishedAt: new Date().toISOString(), navigation: buildNavigation(paths, this.locale),
-      pages: pages.filter(page => !page.deleted).map(page => ({
-        id: page.id, path: page.path, aliases: page.aliases, revision: page.revision,
-        ...(status ? { publicationStatus: status(page) } : {}),
-        ...this.renderer.render(page.content, page.path, images, notes, page.imageBindings)
-      }))
+      schema: 1,
+      revision,
+      publishedAt: new Date().toISOString(),
+      navigation: buildNavigation(paths, this.locale),
+      pages: pages
+        .filter((page) => !page.deleted)
+        .map((page) => ({
+          id: page.id,
+          path: page.path,
+          aliases: page.aliases,
+          revision: page.revision,
+          ...(status ? { publicationStatus: status(page) } : {}),
+          ...this.renderer.render(page.content, page.path, images, notes, page.imageBindings),
+        })),
     };
-    snapshot.importedMedia = [...new Set(snapshot.pages.flatMap(page =>
-      [...page.html.matchAll(/data-media-path="([^"]+)"/g)].map(match => match[1]!.replace(/&(?:amp|quot|#39|lt|gt);/g,
-        entity => ({ '&amp;': '&', '&quot;': '"', '&#39;': "'", '&lt;': '<', '&gt;': '>' })[entity]!)).filter(isImportedImage)
-    ))].sort();
+    snapshot.importedMedia = [
+      ...new Set(
+        snapshot.pages.flatMap((page) =>
+          [...page.html.matchAll(/data-media-path="([^"]+)"/g)]
+            .map((match) =>
+              match[1]!.replace(
+                /&(?:amp|quot|#39|lt|gt);/g,
+                (entity) =>
+                  ({ "&amp;": "&", "&quot;": '"', "&#39;": "'", "&lt;": "<", "&gt;": ">" })[
+                    entity
+                  ]!,
+              ),
+            )
+            .filter(isImportedImage),
+        ),
+      ),
+    ].sort();
     // Rendering can change after an image is added or the renderer is upgraded,
     // even when the Markdown commit is unchanged.
-    snapshot.revision += ':' + createHash('sha256').update(JSON.stringify({ navigation: snapshot.navigation, pages: snapshot.pages, importedMedia: snapshot.importedMedia })).digest('hex');
+    snapshot.revision +=
+      ":" +
+      createHash("sha256")
+        .update(
+          JSON.stringify({
+            navigation: snapshot.navigation,
+            pages: snapshot.pages,
+            importedMedia: snapshot.importedMedia,
+          }),
+        )
+        .digest("hex");
     return snapshot;
   }
-  async publish(pages: PageRecord[], revision: string, status?: (page: PageRecord) => PublicationStatus): Promise<void> {
+  async publish(
+    pages: PageRecord[],
+    revision: string,
+    status?: (page: PageRecord) => PublicationStatus,
+  ): Promise<void> {
     await this.write(await this.render(pages, revision, status));
   }
   async write(snapshot: Publication): Promise<void> {
-    const internal = path.join(this.outputRoot, '.wiki');
-    const stat = await fs.lstat(internal).catch((error: unknown) => { if (!isErrno(error, 'ENOENT')) throw error; });
-    if (stat?.isSymbolicLink()) throw new DomainError('error.symbolicLink', 400, { path: '.wiki' });
+    const internal = path.join(this.outputRoot, ".wiki");
+    const stat = await fs.lstat(internal).catch((error: unknown) => {
+      if (!isErrno(error, "ENOENT")) throw error;
+    });
+    if (stat?.isSymbolicLink()) throw new DomainError("error.symbolicLink", 400, { path: ".wiki" });
     await atomicWrite(publicationPath(this.outputRoot), serialize(snapshot));
   }
 }
 
 export class PublicationReader extends EventEmitter {
   current: Publication | null = null;
-  private stamp = '';
+  private stamp = "";
   private pending: Promise<void> | null = null;
   private timer?: ReturnType<typeof setInterval>;
-  constructor(private readonly root: string, private readonly t: Translator) { super(); }
+  constructor(
+    private readonly root: string,
+    private readonly t: Translator,
+  ) {
+    super();
+  }
 
   async start(interval: number): Promise<void> {
     await this.refresh();
-    this.timer = setInterval(() => { void this.refresh(); }, interval);
+    this.timer = setInterval(() => {
+      void this.refresh();
+    }, interval);
     this.timer.unref();
   }
   refresh(): Promise<void> {
     if (this.pending) return this.pending;
-    this.pending = this.load().finally(() => { this.pending = null; });
+    this.pending = this.load().finally(() => {
+      this.pending = null;
+    });
     return this.pending;
   }
   private async load(): Promise<void> {
@@ -70,18 +126,23 @@ export class PublicationReader extends EventEmitter {
       const stamp = `${stat.mtimeMs}:${stat.size}:${stat.ino}`;
       if (stamp === this.stamp) return;
       const next = await readJson<Publication>(publicationPath(this.root));
-      if (next.schema !== 1 || !Array.isArray(next.pages) || !Array.isArray(next.navigation)) throw new DomainError('error.publication');
+      if (next.schema !== 1 || !Array.isArray(next.pages) || !Array.isArray(next.navigation))
+        throw new DomainError("error.publication");
       const changed = this.current?.revision !== next.revision;
       this.current = next;
       this.stamp = stamp;
-      if (changed) this.emit('publication', next.revision);
+      if (changed) this.emit("publication", next.revision);
     } catch (error) {
-      if (!isErrno(error, 'ENOENT')) console.error(this.t('error.publication'));
+      if (!isErrno(error, "ENOENT")) console.error(this.t("error.publication"));
     }
   }
   require(): Publication {
-    if (!this.current) throw new DomainError('error.notPublished', 503);
+    if (!this.current) throw new DomainError("error.notPublished", 503);
     return this.current;
   }
-  async close(): Promise<void> { clearInterval(this.timer); await this.pending; this.removeAllListeners(); }
+  async close(): Promise<void> {
+    clearInterval(this.timer);
+    await this.pending;
+    this.removeAllListeners();
+  }
 }

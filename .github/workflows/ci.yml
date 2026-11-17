@@ -2,19 +2,58 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: ["**"]
   pull_request:
-    branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: nox-wiki-codex-ci-${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'nox-wiki-codex-Release:') && github.sha || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  plan:
+    name: Select CI work
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Recognize a version-only release request
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          mode=full
+          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
+            mode=$(node scripts/ci-policy.mjs classify "$GITHUB_SHA")
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+
+  policy:
+    name: CI reuse policy tests
+    needs: plan
+    if: needs.plan.outputs.mode == 'full'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - run: node --test scripts/ci-policy.test.mjs scripts/release.test.mjs
+
   validate:
+    needs: plan
+    if: needs.plan.outputs.mode == 'full'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -22,10 +61,22 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm run check
       - run: npm run build
       - run: npm test
+
+  approved:
+    name: CI approved
+    needs: [plan, policy, validate]
+    if: ${{ !cancelled() && needs.plan.outputs.mode == 'full' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every source gate
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node -e 'const jobs = JSON.parse(process.env.RESULTS); if (Object.values(jobs).some(job => job.result !== "success")) process.exit(1)'

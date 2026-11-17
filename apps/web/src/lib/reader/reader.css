@@ -2,8 +2,7 @@
   --codex-top: 5.25rem;
   color: var(--nox-text);
   background: var(--nox-background);
-  font-family:
-    var(--nox-font-body);
+  font-family: var(--nox-font-body);
   font-size: 0.9375rem;
   line-height: 1.65;
   display: grid;
@@ -23,9 +22,27 @@
 :where([data-nox-wiki]) .codex [hidden] {
   display: none !important;
 }
-:where([data-nox-wiki]) .codex .sidebar-label { display: flex; align-items: center; gap: .45rem; }
-:where([data-nox-wiki]) .codex button.navigation-expand { display: grid; place-items: center; flex-shrink: 0; width: 44px; min-height: 44px; padding: .5rem; border: 0; background: transparent; color: var(--nox-text-muted); }
-:where([data-nox-wiki]) .codex button.navigation-expand:hover:not(:disabled) { border: 0; background: var(--nox-neutral-wash-hover); color: var(--nox-accent-text); }
+:where([data-nox-wiki]) .codex .sidebar-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+:where([data-nox-wiki]) .codex button.navigation-expand {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--nox-text-muted);
+}
+:where([data-nox-wiki]) .codex button.navigation-expand:hover:not(:disabled) {
+  border: 0;
+  background: var(--nox-neutral-wash-hover);
+  color: var(--nox-accent-text);
+}
 :where([data-nox-wiki]) .codex a {
   color: var(--nox-link-text);
   text-decoration-thickness: 1px;
@@ -401,15 +418,26 @@
 }
 @media (max-width: 1024px) {
   :where([data-nox-wiki]) .codex,
-:where([data-nox-wiki]) .codex.workspace { --codex-top: 4rem; display: block; padding: 0 1.5rem; }
-  :where([data-nox-wiki]) .codex .sidebar { display: none; }
-  :where([data-nox-wiki]) .codex .reader-main { padding-top: 1.6rem; }
+  :where([data-nox-wiki]) .codex.workspace {
+    --codex-top: 4rem;
+    display: block;
+    padding: 0 1.5rem;
+  }
+  :where([data-nox-wiki]) .codex .sidebar {
+    display: none;
+  }
+  :where([data-nox-wiki]) .codex .reader-main {
+    padding-top: 1.6rem;
+  }
   :where([data-nox-wiki]) .codex .tree-list :is(a, summary),
-:where([data-nox-wiki]) .codex .toc-links a { min-height: 44px; font-size: .9rem; }
+  :where([data-nox-wiki]) .codex .toc-links a {
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
 }
 @media (max-width: 720px) {
   :where([data-nox-wiki]) .codex,
-:where([data-nox-wiki]) .codex.workspace {
+  :where([data-nox-wiki]) .codex.workspace {
     --codex-top: 4rem;
     display: block;
     padding: 0 1.25rem;
@@ -448,8 +476,23 @@
   color: var(--nox-accent-text);
   vertical-align: middle;
 }
-:where([data-nox-wiki]) .codex .note-warning { display: none; }
-:where([data-nox-wiki]) .codex .prose :where(.image-unresolved, .note-warning, .image-repair) svg { vertical-align: middle; }
-:where([data-nox-wiki]) .codex .mobile-toc summary { list-style: none; display: flex; align-items: center; gap: .5rem; }
-:where([data-nox-wiki]) .codex .mobile-toc summary::-webkit-details-marker { display: none; }
-:where([data-nox-wiki]) .codex.show-link-warnings .note-warning { display: inline; margin-inline-start: .3em; color: var(--nox-warning-text); }
+:where([data-nox-wiki]) .codex .note-warning {
+  display: none;
+}
+:where([data-nox-wiki]) .codex .prose :where(.image-unresolved, .note-warning, .image-repair) svg {
+  vertical-align: middle;
+}
+:where([data-nox-wiki]) .codex .mobile-toc summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+:where([data-nox-wiki]) .codex .mobile-toc summary::-webkit-details-marker {
+  display: none;
+}
+:where([data-nox-wiki]) .codex.show-link-warnings .note-warning {
+  display: inline;
+  margin-inline-start: 0.3em;
+  color: var(--nox-warning-text);
+}

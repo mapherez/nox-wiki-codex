@@ -1,1 +1,1 @@
-declare module '@entry';
+declare module "@entry";

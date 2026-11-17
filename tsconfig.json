@@ -17,6 +17,13 @@
     "noEmit": true,
     "types": ["node", "svelte", "vite/client"]
   },
-  "include": ["apps/**/*.ts", "apps/**/*.svelte", "packages/**/*.ts", "test/**/*.ts", "vite.config.ts", "svelte.config.js"],
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.svelte",
+    "packages/**/*.ts",
+    "test/**/*.ts",
+    "vite.config.ts",
+    "svelte.config.js"
+  ],
   "exclude": ["node_modules", ".tools", "build"]
 }
