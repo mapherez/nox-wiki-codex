@@ -1,3 +1,5 @@
+import type { FormatConfig } from "vite-plus/fmt";
+import formatOptions from "./scripts/format-options.json" with { type: "json" };
 import { defineConfig, lazyPlugins } from "vite-plus";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import path from "node:path";
@@ -8,25 +10,7 @@ export default defineConfig(({ mode }) => {
     (mode === "public" ? process.env.PUBLIC_PORT || "3000" : process.env.ADMIN_PORT || "3001");
   const target = `http://127.0.0.1:${port}`;
   return {
-    fmt: {
-      insertFinalNewline: true,
-      endOfLine: "lf",
-      useTabs: false,
-      tabWidth: 2,
-      sortPackageJson: false,
-      svelte: true,
-      ignorePatterns: [
-        "**/node_modules/**",
-        "**/dist/**",
-        "**/build/**",
-        "**/target/**",
-        "**/vendor/**",
-        "**/*.md",
-        "**/*.mdx",
-        "**/package-lock.json",
-        "**/pnpm-lock.yaml",
-      ],
-    },
+    fmt: formatOptions as FormatConfig,
     staged: { "*": "vp check --fix" },
     lint: {
       ignorePatterns: [

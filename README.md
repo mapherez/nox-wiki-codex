@@ -1,4 +1,3 @@
-
 # NoX Wiki
 
 **Write privately. Publish deliberately. Share knowledge beautifully.**
@@ -27,14 +26,14 @@ Behind the public website is a dedicated writing workspace where you can create,
 
 The two experiences are intentionally separate:
 
-| Public Wiki | Admin Workspace |
-| --- | --- |
-| Read published knowledge | Create and edit Markdown pages |
-| Navigate folders and articles | Organize, rename, and move documents |
-| Explore links and relationships | Preview changes before publishing |
-| Search published content | Search drafts and published content |
-| Browse a read-only website | Review Git history and compare revisions |
-| Receive published updates | Publish individual pages or multiple changes |
+| Public Wiki                     | Admin Workspace                              |
+| ------------------------------- | -------------------------------------------- |
+| Read published knowledge        | Create and edit Markdown pages               |
+| Navigate folders and articles   | Organize, rename, and move documents         |
+| Explore links and relationships | Preview changes before publishing            |
+| Search published content        | Search drafts and published content          |
+| Browse a read-only website      | Review Git history and compare revisions     |
+| Receive published updates       | Publish individual pages or multiple changes |
 
 **Your writing stays private until you decide to publish it.**
 
@@ -89,11 +88,11 @@ Saving a document creates a new working revision. Publishing makes a specific sa
 
 Pages have three publication states:
 
-| Status | Meaning |
-| --- | --- |
-| **Draft** | The page exists in the workspace but has never been published. |
-| **Published** | The currently saved version matches the public version. |
-| **Unpublished changes** | The page has saved changes that have not yet been published. |
+| Status                  | Meaning                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| **Draft**               | The page exists in the workspace but has never been published. |
+| **Published**           | The currently saved version matches the public version.        |
+| **Unpublished changes** | The page has saved changes that have not yet been published.   |
 
 This allows you to develop content over time without exposing incomplete notes or experimental changes.
 
@@ -329,17 +328,17 @@ It handles editing, Git versioning, publication, document management, and NoX Sy
 
 It can be started only when you need to work on your knowledge base, independently of the public website.
 
-| Capability | Public Reader | Admin Workspace |
-| --- | :---: | :---: |
-| Read published pages | Yes | Yes |
-| Navigate linked documents | Yes | Yes |
-| Search content | Published | Drafts + Published |
-| Explore relationships | Yes | Yes |
-| Create and edit pages | — | Yes |
-| Preview unpublished changes | — | Yes |
-| Publish content | — | Yes |
-| View Git history | — | Yes |
-| Import from NoX Sync | — | Yes |
+| Capability                  | Public Reader |  Admin Workspace   |
+| --------------------------- | :-----------: | :----------------: |
+| Read published pages        |      Yes      |        Yes         |
+| Navigate linked documents   |      Yes      |        Yes         |
+| Search content              |   Published   | Drafts + Published |
+| Explore relationships       |      Yes      |        Yes         |
+| Create and edit pages       |       —       |        Yes         |
+| Preview unpublished changes |       —       |        Yes         |
+| Publish content             |       —       |        Yes         |
+| View Git history            |       —       |        Yes         |
+| Import from NoX Sync        |       —       |        Yes         |
 
 Both applications use the same Markdown collection, but the public service receives only a published snapshot.
 
@@ -399,9 +398,9 @@ This builds and starts the separate read-only public service. It does not replac
 
 Open the applications:
 
-| Application | Default address |
-| --- | --- |
-| **Public Reader** | <http://localhost:3000> |
+| Application         | Default address         |
+| ------------------- | ----------------------- |
+| **Public Reader**   | <http://localhost:3000> |
 | **Admin Workspace** | <http://localhost:3001> |
 
 Both services bind to the host's loopback interface by default.
@@ -528,14 +527,14 @@ Theme overrides can be added to the same configuration.
 
 The included [.env.example](.env.example) documents the available deployment settings.
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `PUBLIC_PORT` | `3000` | Public Reader host port. |
-| `ADMIN_PORT` | `3001` | Admin Workspace host port. |
-| `CONTENT_DIR` | `./dist` | Markdown document directory. |
-| `STATE_DIR` | `./state` | Private Git and workspace state. |
-| `SITE_CONFIG_FILE` | `./config/site.json` | Website configuration file. |
-| `NOX_WIKI_TAG` | `latest` | Image tag used by GHCR deployment Compose files. |
+| Variable           | Default              | Description                                      |
+| ------------------ | -------------------- | ------------------------------------------------ |
+| `PUBLIC_PORT`      | `3000`               | Public Reader host port.                         |
+| `ADMIN_PORT`       | `3001`               | Admin Workspace host port.                       |
+| `CONTENT_DIR`      | `./dist`             | Markdown document directory.                     |
+| `STATE_DIR`        | `./state`            | Private Git and workspace state.                 |
+| `SITE_CONFIG_FILE` | `./config/site.json` | Website configuration file.                      |
+| `NOX_WIKI_TAG`     | `latest`             | Image tag used by GHCR deployment Compose files. |
 
 Both applications must use the same content directory and site configuration.
 
@@ -543,10 +542,10 @@ Both applications must use the same content directory and site configuration.
 
 NoX Wiki has separate container images for its two applications:
 
-| Service | Image |
-| --- | --- |
-| Public Reader | `ghcr.io/mapherez/nox-wiki-public` |
-| Admin Workspace | `ghcr.io/mapherez/nox-wiki-admin` |
+| Service         | Image                              |
+| --------------- | ---------------------------------- |
+| Public Reader   | `ghcr.io/mapherez/nox-wiki-public` |
+| Admin Workspace | `ghcr.io/mapherez/nox-wiki-admin`  |
 
 Prebuilt-image deployments use:
 
@@ -612,17 +611,17 @@ NoX Wiki is built with TypeScript, Svelte 5, Node.js, and Git.
 
 Its architecture separates the Public Reader, Admin Workspace, document processing, and shared components.
 
-| Component | Technology |
-| --- | --- |
-| Frontend | Svelte 5, TypeScript |
-| Backend | Node.js, Express |
-| Markdown rendering | markdown-it |
-| Version history | Git |
-| Knowledge graph | D3 |
-| Search | Built-in in-memory indexing |
-| Localization | i18next |
-| Deployment | Docker Compose |
-| Container architectures | Linux AMD64 and ARM64 |
+| Component               | Technology                  |
+| ----------------------- | --------------------------- |
+| Frontend                | Svelte 5, TypeScript        |
+| Backend                 | Node.js, Express            |
+| Markdown rendering      | markdown-it                 |
+| Version history         | Git                         |
+| Knowledge graph         | D3                          |
+| Search                  | Built-in in-memory indexing |
+| Localization            | i18next                     |
+| Deployment              | Docker Compose              |
+| Container architectures | Linux AMD64 and ARM64       |
 
 ### Embeddable reader
 
@@ -642,14 +641,14 @@ The integration currently exposes a Svelte component rather than a packaged fram
 
 Install dependencies with `npm ci`, then use the repository's scripts for checking, testing, building, and starting the applications.
 
-| Script | Purpose |
-| --- | --- |
-| `npm run check` | TypeScript and Svelte validation. |
-| `npm test` | Automated tests. |
-| `npm run build` | Build server, Public Reader, and Admin Workspace. |
-| `npm start` | Start the public service. |
-| `npm run admin` | Start the Admin workspace. |
-| `npm run dev:ui` | Start the development UI server. |
+| Script           | Purpose                                           |
+| ---------------- | ------------------------------------------------- |
+| `npm run check`  | TypeScript and Svelte validation.                 |
+| `npm test`       | Automated tests.                                  |
+| `npm run build`  | Build server, Public Reader, and Admin Workspace. |
+| `npm start`      | Start the public service.                         |
+| `npm run admin`  | Start the Admin workspace.                        |
+| `npm run dev:ui` | Start the development UI server.                  |
 
 Only one Admin process should manage a particular document and state directory at a time.
 

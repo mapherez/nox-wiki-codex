@@ -89,9 +89,9 @@ The internal type has readonly `colors`, `fonts`, `colorScheme`, `neutralWash`, 
 
 ```svelte
 <script lang="ts">
-  import { CodexReader, createTranslator, type ThemeConfig } from './apps/web/src/lib/reader';
+  import { CodexReader, createTranslator, type ThemeConfig } from "./apps/web/src/lib/reader";
   const t = createTranslator();
-  let theme: ThemeConfig = { colors: { accent: '#8bc5b1' } };
+  let theme: ThemeConfig = { colors: { accent: "#8bc5b1" } };
 </script>
 
 <CodexReader
@@ -99,7 +99,9 @@ The internal type has readonly `colors`, `fonts`, `colorScheme`, `neutralWash`, 
   basePath="/codex"
   {t}
   {theme}
-  onNavigate={(path, hash) => { /* Update the host router. */ }}
+  onNavigate={(path, hash) => {
+    /* Update the host router. */
+  }}
 />
 ```
 
@@ -128,24 +130,24 @@ Let B = background, S = surface, T = text, A = accent and L = link. Opaque mixin
 
 `readable(seed, backgrounds, minimum)` keeps an already readable color. Otherwise it searches the two OKLab paths toward black and white, choosing the feasible result with the smallest perceptual displacement. Results are checked after conversion to hex. A role without a feasible shared foreground raises `unresolvableContrast`.
 
-| Public inputs | Resolved role | Derivation |
-| --- | --- | --- |
-| B, S, T | background, surface, text | Direct aliases |
-| B, S | surfaceField | mix(B, S, 75%) |
-| S, T | surfaceControl / surfaceHover | mix(S, T, 5% / 10%) |
-| S, T | textMuted | readable(mix(S, T, 70%), copy placements, 4.5) |
-| S, T | border | mix(S, T, 12%); decorative |
-| S, T | borderControl | readable(mix(S, T, 45%), control placements, 3) |
-| A | accentFill | Original accent |
-| A | accentText | readable(A, brand/action placements, 4.5) |
-| A | textOnAccent | Black or white, whichever contrasts more with accentFill |
-| L | linkText | readable(L, reader/link placements, 4.5) |
-| L, S, T | linkMuted | readable(mix(linkText, textMuted, 40%), base/surface, 4.5) |
-| T | neutralWash / neutralWashHover | T at 3/255 / 8/255 alpha |
-| A | accentWash | A at 18/255, 22/255, 26/255, 38/255 for subtle, selected, active, hover |
-| A | accentStroke | A at 56/255 / 112/255 for normal / strong |
-| B | colorScheme | Dark if white contrasts more with B; light otherwise |
-| Three font stacks | fonts | Normalized stacks with generic fallback |
+| Public inputs     | Resolved role                  | Derivation                                                              |
+| ----------------- | ------------------------------ | ----------------------------------------------------------------------- |
+| B, S, T           | background, surface, text      | Direct aliases                                                          |
+| B, S              | surfaceField                   | mix(B, S, 75%)                                                          |
+| S, T              | surfaceControl / surfaceHover  | mix(S, T, 5% / 10%)                                                     |
+| S, T              | textMuted                      | readable(mix(S, T, 70%), copy placements, 4.5)                          |
+| S, T              | border                         | mix(S, T, 12%); decorative                                              |
+| S, T              | borderControl                  | readable(mix(S, T, 45%), control placements, 3)                         |
+| A                 | accentFill                     | Original accent                                                         |
+| A                 | accentText                     | readable(A, brand/action placements, 4.5)                               |
+| A                 | textOnAccent                   | Black or white, whichever contrasts more with accentFill                |
+| L                 | linkText                       | readable(L, reader/link placements, 4.5)                                |
+| L, S, T           | linkMuted                      | readable(mix(linkText, textMuted, 40%), base/surface, 4.5)              |
+| T                 | neutralWash / neutralWashHover | T at 3/255 / 8/255 alpha                                                |
+| A                 | accentWash                     | A at 18/255, 22/255, 26/255, 38/255 for subtle, selected, active, hover |
+| A                 | accentStroke                   | A at 56/255 / 112/255 for normal / strong                               |
+| B                 | colorScheme                    | Dark if white contrasts more with B; light otherwise                    |
+| Three font stacks | fonts                          | Normalized stacks with generic fallback                                 |
 
 Contrast placements are deliberately scoped by role:
 

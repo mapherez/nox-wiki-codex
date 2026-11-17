@@ -20,12 +20,14 @@
     "hooks:install": "node scripts/install-hooks.mjs",
     "prepare": "node --input-type=module -e \"import { existsSync } from 'node:fs'; if (existsSync('scripts/install-hooks.mjs')) await import('./scripts/install-hooks.mjs');\"",
     "precommit": "node scripts/git-hooks.mjs commit",
-    "prepush": "npm run check",
+    "prepush": "node scripts/format-files.mjs --check --revision HEAD && npm run check",
     "test:release": "node --test scripts/release.test.mjs scripts/ci-policy.test.mjs",
     "check:code": "vp check",
-    "format:check": "vp fmt --check",
-    "format": "vp fmt",
-    "dev:ui:server": "vp dev --config vite.config.ts --mode admin"
+    "format:check": "node scripts/format-files.mjs --check",
+    "format": "node scripts/format-files.mjs",
+    "dev:ui:server": "vp dev --config vite.config.ts --mode admin",
+    "test:format": "node --test scripts/format-files.test.mjs",
+    "precheck": "npm run format:check"
   },
   "dependencies": {
     "d3-force": "^3.0.0",
@@ -45,6 +47,7 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
+    "@prettier/plugin-xml": "3.4.2",
     "@sveltejs/vite-plugin-svelte": "^6.0.0",
     "@types/d3-force": "^3.0.10",
     "@types/d3-selection": "^3.0.12",
@@ -54,6 +57,8 @@
     "@types/node": "^24.0.0",
     "@types/proper-lockfile": "^4.1.4",
     "phosphor-svelte": "^3.1.0",
+    "prettier": "3.10.1",
+    "prettier-plugin-sh": "0.20.2",
     "svelte-check": "^4.0.0",
     "tsx": "^4.0.0",
     "typescript": "^5.9.0",
